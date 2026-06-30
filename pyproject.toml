@@ -1,0 +1,32 @@
+[project]
+name = "call-pilot-backend"
+version = "0.1.0"
+description = "CallPilot backend using Azure OpenAI for transcription, chat, and text-to-speech."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "python-dotenv==1.0.1",
+    "requests==2.32.3",
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.34.0",
+    "twilio==9.4.1",
+    "python-multipart==0.0.20",
+]
+
+[project.scripts]
+call-pilot-validate-env = "call_agent.cli.validate_env:main"
+call-pilot-smoke-azure = "call_agent.cli.smoke_azure:main"
+call-agent-validate-env = "call_agent.cli.validate_env:main"
+call-agent-smoke-azure = "call_agent.cli.smoke_azure:main"
+call-pilot-serve = "call_agent.web.app:run"
+call-pilot-call = "call_agent.cli.place_call:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["call_agent"]
