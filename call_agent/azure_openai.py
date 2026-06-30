@@ -62,20 +62,40 @@ class AzureOpenAIClient:
         text: str,
         voice: str = "alloy",
         response_format: str = "mp3",
+        instructions: str | None = None,
     ) -> bytes:
+        payload = {
+            "model": self.config.tts_deployment,
+            "input": text,
+            "voice": voice,
+            "response_format": response_format,
+        }
+        if instructions:
+            payload["instructions"] = instructions  # steers tone/accent (gpt-4o-mini-tts)
         response = self.session.post(
             self._url(self.config.tts_deployment, "audio/speech"),
             headers=self._json_headers(),
-            json={
-                "model": self.config.tts_deployment,
-                "input": text,
-                "voice": voice,
-                "response_format": response_format,
-            },
+            json=payload,
             timeout=60,
         )
         response.raise_for_status()
         return response.content
+
+    def embed(self, texts: list[str]) -> list[list[float]]:
+        """Return one embedding vector per input text (batch request)."""
+        if not self.config.embed_deployment:
+            raise RuntimeError(
+                "AZURE_OPENAI_EMBED_DEPLOYMENT is not set; embeddings are required for RAG."
+            )
+        response = self.session.post(
+            self._url(self.config.embed_deployment, "embeddings"),
+            headers=self._json_headers(),
+            json={"model": self.config.embed_deployment, "input": texts},
+            timeout=60,
+        )
+        response.raise_for_status()
+        data = response.json()
+        return [item["embedding"] for item in data["data"]]
 
     def transcribe(self, audio_path: str | Path) -> str:
         path = Path(audio_path)

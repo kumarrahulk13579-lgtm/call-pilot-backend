@@ -11,6 +11,12 @@ dependencies = [
     "uvicorn[standard]==0.34.0",
     "twilio==9.4.1",
     "python-multipart==0.0.20",
+    "sqlalchemy>=2.0.51",
+    "psycopg2-binary>=2.9.12",
+    "alembic>=1.18.5",
+    "bcrypt>=5.0.0",
+    "pyjwt>=2.13.0",
+    "pgvector>=0.4.2",
 ]
 
 [project.scripts]

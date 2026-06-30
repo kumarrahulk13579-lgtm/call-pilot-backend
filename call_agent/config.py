@@ -12,6 +12,7 @@ class AzureOpenAIConfig:
     chat_deployment: str
     transcribe_deployment: str
     tts_deployment: str
+    embed_deployment: str = ""  # optional; only needed for RAG retrieval
 
     @classmethod
     def required_env_vars(cls) -> tuple[str, ...]:
@@ -43,6 +44,7 @@ class AzureOpenAIConfig:
             chat_deployment=values["AZURE_OPENAI_CHAT_DEPLOYMENT"],
             transcribe_deployment=values["AZURE_OPENAI_TRANSCRIBE_DEPLOYMENT"],
             tts_deployment=values["AZURE_OPENAI_TTS_DEPLOYMENT"],
+            embed_deployment=os.getenv("AZURE_OPENAI_EMBED_DEPLOYMENT", "").strip(),
         )
 
 
