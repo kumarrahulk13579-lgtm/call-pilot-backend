@@ -29,6 +29,7 @@ from call_agent.database import get_db
 from call_agent.web.agent_routes import router as agent_router
 from call_agent.web.auth_routes import router as auth_router
 from call_agent.web.document_routes import router as document_router
+from call_agent.web.voice_test_routes import router as voice_test_router
 from db.models import Agent
 
 GREETING = "Hi! You're speaking with the AI call agent. How can I help you today?"
@@ -42,6 +43,7 @@ app = FastAPI(title="CallPilot Call Agent")
 app.include_router(auth_router)
 app.include_router(agent_router)
 app.include_router(document_router)
+app.include_router(voice_test_router)
 client = AzureOpenAIClient(AzureOpenAIConfig.from_env())
 conversations = ConversationStore(client)
 

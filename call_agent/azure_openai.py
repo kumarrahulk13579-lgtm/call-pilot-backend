@@ -107,7 +107,10 @@ class AzureOpenAIClient:
                 files={"file": (str(path), audio_file, _content_type(path))},
                 timeout=60,
             )
-        response.raise_for_status()
+        if not response.ok:
+            raise RuntimeError(
+                f"transcribe failed: {response.status_code} {response.text}"
+            )
         data = response.json()
         return data["text"]
 

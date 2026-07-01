@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from call_agent.agent_templates import TEMPLATES, VALID_TYPES, get_template
 from call_agent.database import get_db
 from call_agent.security import get_current_user
-from db.models import Agent, User
+from db.models import Agent, Document, DocumentChunk, User
 
 router = APIRouter(tags=["agents"])
 
@@ -169,3 +169,23 @@ def update_agent(
     db.commit()
     db.refresh(agent)
     return _to_response(agent)
+
+
+@router.delete(
+    "/agents/{agent_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+)
+def delete_agent(
+    agent_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    agent = db.get(Agent, agent_id)
+    if agent is None or agent.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agent not found")
+
+    db.query(DocumentChunk).filter(DocumentChunk.agent_id == agent_id).delete()
+    db.query(Document).filter(Document.agent_id == agent_id).delete()
+    db.delete(agent)
+    db.commit()
